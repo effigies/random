@@ -1,0 +1,64 @@
+Context: I was playing with a Sieve of Eratosthenes script, just sort of
+optimizing what is a very simple method. It quickly became obvious that after
+you remove all the multiples of two, for all following  primes, you can skip
+every other one, since it must be a multiple of two. Thinking to generalize, I
+tried to come up with a quick pattern that would allow one to ignore most of
+the already removed numbers. Alas, there was no consistent number one could
+skip, or at least, no single number.
+
+
+Sieve of Eratosthenes
+When removing multiples of two, don't skip any.
+When removing multiples of three, skip every other one. i.e. 9,15,21...
+When removing multiples of five, skip three and one alternately.
+	i.e. 25,35,55,65,85,95,... (diff of 20,10,20,10,...)
+When removing multiples of seven, skip by the following pattern
+	skip five first, and six and two alternating after that
+	skip three second, and two two four repeating after that
+	skip one third, and two three three repeating after that
+	That is, between primes, you'll get a pattern like this:
+	5,3,1,3,1,3,5,1,5,3,1,3,1,3,5,1,5,...
+	Which gets you a set of removals that look like:
+	49,77,91,119,133,161,203,...
+
+These are enticingly regular, and I have a strong suspicion it continues,
+though the patterns will grow more complex. I want to find a way of producing
+these patterns given a prime.
+
+i.e.
+pattern(2) =   [0,0,0,0,0,0,0,0,...]
+pattern(3) =   [1,1,1,1,1,1,1,1,...]
+pattern(5) =   [3,1,3,1,3,1,3,1...]
+pattern(7) =   [5,3,1,3,1,3,5,1,
+		5,3,1,3,1,3,5,1,
+		...]
+pattern(11) =  [9,1,3,1,3,5,1,5,3,1,3,5,5,1,5,3,1,5,3,5,7,3,1,3,1,3,7,5,3,5,1,3,5,1,5,5,3,1,3,5,1,5,3,1,3,1,9,1,
+		9,1,3,1,3,5,1,5,3,1,3,5,5,1,5,3,1,5,3,5,7,3,1,3,1,3,7,5,3,5,1,3,5,1,5,5,3,1,3,5,1,5,3,1,3,1,9,1,
+		...]
+
+There is an interesting symmetry in that apart from the 1 that finishes it, each is palindromic.
+
+period(pattern(2))	=    1
+period(pattern(3))	=    1	*   ( 2 - 1 )	=     1
+period(pattern(5))	=    1	*   ( 3 - 1 )	=     2
+period(pattern(7))	=    2	*   ( 5 - 1 )	=     8
+period(pattern(11))	=    8	*   ( 7 - 1 )	=    48
+period(pattern(13))	=   48	*  ( 11 - 1 )	=   480
+period(pattern(17))	=  480	*  ( 13 - 1 )	=  5760
+period(pattern(19))	= 5760	*  ( 17 - 1 )	= 92160
+...
+period(pattern(p_i))	= period(pattern(p_(i-1))) * (p_(i-1) - 1)
+
+At this point, I am taxing my poor computer to nearly its limits, and I
+don't think going further will really be within the realm of
+feasibility. However, the patterns are quite intriguing, and the
+appearance of the primes in the coefficients is somewhat surprising.
+
+Rather than including the actual patterns from after 11, I have
+text files with the grepped output of a modified Sieve of Eratosthenes,
+which prints the gaps encountered for each prime it removes. In order
+to find the repeat for 19, I had to run it on a sieve up to 10**7.
+
+In the end, I don't really know how much help this is at finding any new
+patterns to the primes. It shows us what holes we fill, but I don't see
+any way for it to tell us what holes we don't fill.

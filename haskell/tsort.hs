@@ -73,6 +73,7 @@ version = unlines ["tsort 0.01",
   "Academic Free License",
   "Copy what you like."]
 
+-- Similarly copied
 run :: String -> String
 run = unlines . tsort . (map words) . lines
 

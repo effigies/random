@@ -3,7 +3,7 @@ use diagnostics;
 use warnings;
 use strict;
 
-# collection.pl
+# dir2html.pl
 # Chris Johnson 2008
 #
 # Generates a single web page of the entire contents of a directory structure
@@ -111,7 +111,7 @@ my $directory = shift;
 
 if ($help or not $directory) {
 	print <<HELP;
-Usage: collection.pl [options] DIR
+Usage: dir2html.pl [options] DIR
 Options:
 	--help		Display this information
 	--title Text	Title text to use in HTML output

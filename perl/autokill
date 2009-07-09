@@ -1,0 +1,27 @@
+#!/usr/bin/perl
+#
+# 2009.07.09 Chris Johnson
+# Specify a time to kill a process and run it
+#
+# Usage: autokill AT_TIME_SPEC COMMAND ARGS
+#
+# Note that I don't bother validating the at time spec, I just assume that
+# nothing in your spec will be in your $PATH, and run the first command I find
+
+@paths = split /:/, $ENV{PATH};
+
+CMDS: while ($cmd = shift @ARGV) {
+	if ($cmd =~ m#^/#) {
+		last;
+	}
+	PATHS: for (@paths) {
+		last CMDS if (-e (join "/", ($_,$cmd)));
+	}
+	push @atargs, $cmd;
+}
+
+open AT, "| at @atargs";
+print AT "kill -INT $$";
+close AT;
+
+exec $cmd, @ARGV;

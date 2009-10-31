@@ -16,8 +16,8 @@ CMDS: while ($cmd = shift @ARGV) {
 	if ($cmd =~ m#^/#) {
 		last;
 	}
-	PATHS: for (@paths) {
-		last CMDS if (-e (join "/", ($_,$cmd)));
+	for (@paths) {
+		last CMDS if (-x (join "/", ($_,$cmd)));
 	}
 	push @atargs, $cmd;
 }

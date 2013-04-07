@@ -1,0 +1,10 @@
+#!/bin/sh
+# 2013.04.07 Christopher J. Johnson
+# Remove annotation locks from PDFs
+# 
+# Moves original to .bak, in case something goes wrong
+
+for pdf in "$@"; do
+    mv $pdf $pdf.bak
+    pdftops $pdf.bak - | ps2pdf - $pdf
+done

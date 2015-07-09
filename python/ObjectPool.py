@@ -3,8 +3,8 @@ import types
 import warnings
 
 
-class Pool(list):
-    """Thread-safe stack of objects not currently in use, generates new object
+class Pool(set):
+    """Thread-safe pool of objects not currently in use, generates new object
     when empty. Objects have a release() method that reinserts them into the
     pool.
 
@@ -30,7 +30,14 @@ class Pool(list):
         super(Pool, self).__init__()
 
         self.lock = threading.Lock()
-        klass.release = types.MethodType(self.append, None, klass)
+        def release(obj):
+            """Release for reuse"""
+            if obj in self:
+                warnings.warn(RuntimeWarning('Attempting double-release of ' +
+                                             klass.__name__))
+            else:
+                self.add(obj)
+        klass.release = release
         self.klass = klass
 
     def __call__(self):
@@ -85,7 +92,14 @@ def pool(klass):
 
 
 @Pool
-class TestPooling(object):
+class TestPoolClass(object):
+    """Basic object that contains x attribute, default value 1"""
+    def init(self):
+        self.x = 1
+
+
+@pool
+class TestPoolFunc(object):
     """Basic object that contains x attribute, default value 1"""
     def init(self):
         self.x = 1

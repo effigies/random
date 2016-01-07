@@ -1,10 +1,24 @@
 #!/bin/sh
-# 2013.04.07 Christopher J. Johnson
-# Remove annotation locks from PDFs
-# 
+# unlockpdf - Remove annotation and password locks from PDFs
+#
+# If password-protected, use -p as first argument to prompt for password.
+#
 # Moves original to .bak, in case something goes wrong
+#
+# 2016 Christopher J. Markiewicz
+
+OPTS=""
+
+if [ "$1" = "-p" ]; then
+    shift
+    stty -echo
+    read -p "Password: " PASS
+    echo
+    stty echo
+    OPTS="$OPTS -upw $PASS"
+fi
 
 for pdf in "$@"; do
     mv $pdf $pdf.bak
-    pdftops $pdf.bak - | ps2pdf - $pdf
+    pdftops $OPTS $pdf.bak - | ps2pdf - $pdf
 done

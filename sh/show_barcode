@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# Display a barcode passed as argument
+#
+# 2016 Chris Markiewicz
+
+if [ -z "$1" ]; then
+    cat <<USAGE
+Usage: $0 BARCODE_VALUE
+
+Exit with 'q'
+USAGE
+    exit 1
+fi
+
+# Convert to png in separate command from manipulation to avoid resolution loss
+barcode -b $1 | \
+    convert ps:- png:- | \
+    convert png:- -flatten -trim -bordercolor white -border 10 png:- | \
+    display

@@ -73,7 +73,7 @@ def main():
 
     sym_path = Path(opts.symbols)
     if sym_path.exists():
-        symbols = sym_path.read_text().splitlines()
+        symbols = [sym for sym in sym_path.read_text().splitlines() if sym]
     else:
         symbols = opts.symbols.split(",")
 

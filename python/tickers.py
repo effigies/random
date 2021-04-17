@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 from dateutil.parser import parse as parsedate
 import requests
 import pandas as pd
-from functools import lru_cache
+from functools import lru_cache, partial
 
 
 YAHOO_API = "https://query1.finance.yahoo.com/v7/finance/download/{symbol}"
@@ -46,7 +46,7 @@ def get_tickers(symbols, field, start_date, end_date):
     return pd.concat(
         (get_observations(symbol, field, start_date, end_date) for symbol in symbols),
         axis=1,
-    ).dropna()
+    )
 
 
 def main():
@@ -64,6 +64,7 @@ def main():
         help=f"One of {fields}",
     )
     parser.add_argument("-o", "--output", metavar="PATH")
+    parser.add_argument("-n", "--fillna", choices=("forward", "none"))
     parser.add_argument("start_date", nargs="?", help="First date (default 1 week ago)")
     parser.add_argument("end_date", nargs="?", help="Final date (default today)")
     opts = parser.parse_args()
@@ -77,8 +78,17 @@ def main():
     else:
         symbols = opts.symbols.split(",")
 
+    filterna = pd.DataFrame.dropna
+    if opts.fillna:
+        kwargs = {}
+        if opts.fillna == "forward":
+            kwargs["method"] = "ffill"
+        elif opts.fillna == "none":
+            kwargs["value"] = 0
+        filterna = partial(pd.DataFrame.fillna, **kwargs)
+
     df = get_tickers(symbols, opts.field, start, end)
-    df = df.round(2).sort_index(ascending=False)
+    df = filterna(df).round(2).sort_index(ascending=False)
 
     if opts.output:
         df.to_excel(opts.output)

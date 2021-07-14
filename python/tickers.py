@@ -94,7 +94,7 @@ def main():
         filterna = partial(pd.DataFrame.fillna, **kwargs)
 
     df = get_tickers(symbols, opts.field, start, end)
-    df = filterna(df).round(2).sort_index(ascending=False)
+    df = filterna(df).round(4).sort_index(ascending=False)
 
     if opts.output:
         df.to_excel(opts.output)

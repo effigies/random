@@ -30,7 +30,13 @@ def get_historical_data(symbol, start_date, end_date):
         "events": "history",
         "includeAdjustedClose": "true",
     }
-    res = requests.get(YAHOO_API.format(symbol=symbol), params=params)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/91.0.4472.124 Safari/537.36"
+    }
+    res = requests.get(YAHOO_API.format(symbol=symbol),
+                       params=params, headers=headers)
     if res.ok:
         return pd.read_csv(io.BytesIO(res.content), index_col="Date", parse_dates=True)
     raise ValueError(f"Could not retrieve symbol {symbol}")
